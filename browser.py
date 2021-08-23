@@ -16,7 +16,7 @@ class Browser:
 
     def __init__(self):
         """
-        Init and configuration robot
+        Инициализация и настройка робота
         :return:
         """
         chrome_options = webdriver.ChromeOptions()
@@ -35,8 +35,9 @@ class Browser:
 
     def get_currency_rate(self, key):
         """
+            Возвращает список строк таблицы
         :param key:
-        :return: list with table lines
+        :return:
         """
         print(f"Open {key}...", end='')
 
@@ -54,9 +55,9 @@ class Browser:
 
     def execute_action(self, act_list):
         """
-        Open page with roadmap
+            Выполняет действия описанные в словаре
 
-        :param act_list: dict with actions & params
+        :param act_list: список словарей с действиями и параметрами
         :return:
         """
 
@@ -65,8 +66,6 @@ class Browser:
             "link_text": self.browser.find_element_by_link_text,
             "get": self.browser.get
         }
-
-        # self.browser.get(moex_url)
 
         for action in act_list:
             try:
@@ -79,6 +78,11 @@ class Browser:
                 raise ExecuteActionsError(f"Action '{action}' was not execute", func="execute_action")
 
     def get_all_currency_rate(self, currencies):
+        """
+         Возвращает словарь со списками строк таблиц курсов всех валют указанных в конфиге
+        :param currencies:
+        :return:
+        """
         self.execute_action(cr_roadmap)
 
         tables_dict = dict()
@@ -95,6 +99,10 @@ class Browser:
         return tables_dict
 
     def __del__(self):
+        """
+         закрывает браузер
+        :return:
+        """
         print(f"{self} deleted.")
         self.browser.close()
         self.browser.quit()

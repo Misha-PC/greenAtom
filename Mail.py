@@ -8,15 +8,17 @@ import os
 
 
 class Mail:
+    """
+        Абстракция над письмом, для более удобной отправки
+    """
     def __init__(self, recipients: list, sender: str,
                  subject: str, body: str, file_path: str = None):
-
         """
-        :param recipients: list recipients
-        :param sender:     str  sender email
-        :param subject:    str  message subject
-        :param body:       str  message text
-        :param file_path:  str  [full path to file]
+        :param recipients: список получателей
+        :param sender:     почта отправителя
+        :param subject:    тема письма
+        :param body:       основной текст
+        :param file_path:  путь к файлу, который будет прикреплён к письму
         """
 
         text = MIMEText(body, 'plain')
@@ -49,11 +51,24 @@ class Mail:
 
 
 class MailSender:
+    """
+        Объект подключения к SMTP серверу
+    """
     def __init__(self, sender: str, password: str, smtp_serrver: str):
+        """
+        :param sender:  почта отправителя
+        :param password: пароль от почты
+        :param smtp_serrver: адрес SMTP сервера
+        """
         self.server = smtplib.SMTP_SSL(smtp_serrver)  # Создаем объект SMTP
         self.server.login(sender, password)           # Авторизируемся на smtp сервере
 
     def send_mail(self, mail: Mail):
+        """
+            Отправка письма
+        :param mail:
+        :return:
+        """
         try:
             self.server.send_message(mail.get_message())
         except Exception as e:
@@ -67,6 +82,11 @@ class MailSender:
 
 
 def send_mail_to_admins(text: str):
+    """
+        Необходима для отправки сообщений об ошибках при выполнении программы
+    :param text:
+    :return:
+    """
     MailSender(sender, password, smtp_server).send_mail(
         Mail(admin_mails, sender, "Python script: fatal error!", text)
     )
