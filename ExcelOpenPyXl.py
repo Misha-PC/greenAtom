@@ -15,11 +15,17 @@ class NoSheetError(BaseAppException):
     pass
 
 
-class CellFromatError(BaseAppException):
+class CellFormatException(BaseAppException):
     pass
 
 
 def prepear_data_to_excel(usd: list, eur: list, header: list) -> list:
+    """
+    :param usd: list with dollar currencies rate
+    :param eur: list with euro currencies rate
+    :param header: list with column names
+    :return: list
+    """
     output = list()
     output.append(header)
 
@@ -36,7 +42,12 @@ def prepear_data_to_excel(usd: list, eur: list, header: list) -> list:
     return [output, lines_count + 1]
 
 
-def write_array_to_excel(content: list, dir_: str = None, file_path: str = "output.xlsx"):
+def write_array_to_excel(content: list, file_path: str = "output.xlsx"):
+    """
+    :param content: list with table content
+    :param file_path:
+    :return: None
+    """
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Sheet1"
@@ -62,6 +73,10 @@ def write_array_to_excel(content: list, dir_: str = None, file_path: str = "outp
 
 
 def check_cell_type(file_pah: str):
+    """
+    :param file_pah:
+    :return: True if type of cells corresponds to the required, else raise CellFormatException
+    """
     wb = openpyxl.load_workbook(filename=file_pah)
     if not sheet_name in wb.sheetnames:
         raise NoSheetError(f"No '{sheet_name}' from '{file_pah}'")
@@ -73,7 +88,7 @@ def check_cell_type(file_pah: str):
             for row in range(1, 30):
                 style = openpyxl.styles.numbers.BUILTIN_FORMATS[column_type_code[type_]]
                 if ws.cell(column=col, row=row).number_format != style:
-                    raise CellFromatError(f"Cell[{col}, {row}] format is not {style}")
+                    raise CellFormatException(f"Cell[{col}, {row}] format is not {style}")
     return True
 
 
