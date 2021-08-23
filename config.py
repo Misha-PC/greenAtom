@@ -45,7 +45,7 @@ cfg_max_lines = 50
 
 """"==================== mail ===================="""
 sender = "misha.rus95@mail.ru"
-password = "pkRHrtpEeqoVshoIPasK"
+password = ""
 recipients = ["misha.rus.ru@gmail.com"]
 admin_mails = ["misha.rus.ru@gmail.com"]
 smtp_server = "smtp.mail.ru"
