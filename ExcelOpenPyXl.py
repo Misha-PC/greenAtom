@@ -1,7 +1,9 @@
-import openpyxl
-import openpyxl.styles.numbers
 from config import header, column_type, file_path, sheet_name
 from BaseAppException import BaseAppException
+from win32com.client import Dispatch
+import openpyxl.styles.numbers
+import openpyxl
+import os
 
 column_type_code = {
     'finance': 44,
@@ -21,9 +23,9 @@ class CellFormatException(BaseAppException):
 
 def prepear_data_to_excel(usd: list, eur: list, header: list) -> list:
     """
-    :param usd: list with dollar currencies rate
-    :param eur: list with euro currencies rate
-    :param header: list with column names
+    :param usd: список с курсом доллора
+    :param eur: список с курсом евро
+    :param header: список с курсом названиями столбцов
     :return: list
     """
     output = list()
@@ -42,10 +44,10 @@ def prepear_data_to_excel(usd: list, eur: list, header: list) -> list:
     return [output, lines_count + 1]
 
 
-def write_array_to_excel(content: list, file_path: str = "output.xlsx"):
+def write_array_to_excel(content: list, file_path: str = file_path):
     """
-    :param content: list with table content
-    :param file_path:
+    :param content: список с данными для записи в таблицу
+    :param file_path: путь к файлу
     :return: None
     """
     wb = openpyxl.Workbook()
@@ -60,22 +62,13 @@ def write_array_to_excel(content: list, file_path: str = "output.xlsx"):
                 style = openpyxl.styles.numbers.BUILTIN_FORMATS[column_type_code[type_]]
                 ws.cell(column=col, row=row).number_format = style
 
-    for i in ['A', 'D']:
-        ws.column_dimensions[i].width = 12
-
-    for i in ['B', 'E']:
-        ws.column_dimensions[i].width = 10
-
-    for i in ['G', 'C', 'F']:
-        ws.column_dimensions[i].width = 11
-
     wb.save(filename=file_path)
 
 
 def check_cell_type(file_pah: str):
     """
     :param file_pah:
-    :return: True if type of cells corresponds to the required, else raise CellFormatException
+    :return: True если тип ячеек совпадает с неоходимым в противном случае бросает исключение CellFormatException
     """
     wb = openpyxl.load_workbook(filename=file_pah)
     if not sheet_name in wb.sheetnames:
@@ -90,3 +83,19 @@ def check_cell_type(file_pah: str):
                 if ws.cell(column=col, row=row).number_format != style:
                     raise CellFormatException(f"Cell[{col}, {row}] format is not {style}")
     return True
+
+
+def auto_fit(file_path: str = file_path):
+    """
+    Устанавливает автоширину для столбцов A:G
+    :param file_path:
+    :return:
+    """
+    full_path = os.path.abspath(file_path)
+    xl_app = Dispatch('Excel.Application')
+    xl_app.Visible = True
+    wb = xl_app.Workbooks.Open(full_path)
+    wb.ActiveSheet.Columns("A:G").AutoFit()
+    xl_app.ActiveWorkbook.Close(SaveChanges=1)
+    xl_app.Quit()
+    del xl_app
