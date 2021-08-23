@@ -20,12 +20,7 @@ def main():
     write_array_to_excel(table_content, file_path=file_path)
 
     """check cell format"""
-    try:
-        check_cell_type(file_pah=file_path)
-    except CellFromatError:
-        exit()
-    except NoSheetError:
-        exit()
+    check_cell_type(file_pah=file_path)
 
     """prepare mail & sender"""
     mail = Mail(recipients, sender, mail_subject,
