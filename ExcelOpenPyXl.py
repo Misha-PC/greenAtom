@@ -90,7 +90,3 @@ def check_cell_type(file_pah: str):
                 if ws.cell(column=col, row=row).number_format != style:
                     raise CellFormatException(f"Cell[{col}, {row}] format is not {style}")
     return True
-
-
-if __name__ == '__main__':
-    check_cell_type(file_path)
